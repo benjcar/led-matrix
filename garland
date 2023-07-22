@@ -1,0 +1,58 @@
+#include <FastLED.h>
+
+#define LED_PIN 6      // Пин, к которому подключена лента
+#define NUM_LEDS 30    // Количество светодиодов в ленте
+#define LED_TYPE WS2812 // Тип вашей светодиодной ленты (WS2812, WS2811, NEOPIXEL и т. д.)
+#define BRIGHTNESS 128 // Яркость светодиодов (от 0 до 255)
+
+CRGB leds[NUM_LEDS];
+
+void setup() {
+  FastLED.addLeds<LED_TYPE, LED_PIN, GRB>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
+  FastLED.setBrightness(BRIGHTNESS);
+  Serial.begin(9600);
+}
+
+void loop() {
+  static uint8_t mode = 0;
+  switch (mode) {
+    case 0:
+      // Режим 1: Все светодиоды красного цвета
+      fill_solid(leds, NUM_LEDS, CRGB::Red);
+      FastLED.show();
+      break;
+      
+    case 1:
+      // Режим 2: Все светодиоды зеленого цвета
+      fill_solid(leds, NUM_LEDS, CRGB::Green);
+      FastLED.show();
+      break;
+
+    case 2:
+      // Режим 3: Все светодиоды синего цвета
+      fill_solid(leds, NUM_LEDS, CRGB::Blue);
+      FastLED.show();
+      break;
+
+    case 3:
+      // Режим 4: Плавное переключение между цветами
+      for (int i = 0; i < 256; i++) {
+        fill_solid(leds, NUM_LEDS, CHSV(i, 255, 255));
+        FastLED.show();
+        delay(20);
+      }
+      break;
+
+    case 4:
+      // Режим 5: Случайные цвета на каждом светодиоде
+      for (int i = 0; i < NUM_LEDS; i++) {
+        leds[i] = CRGB(random(256), random(256), random(256));
+      }
+      FastLED.show();
+      break;
+  }
+
+  // Переключение на следующий режим каждые 5 секунд
+  delay(5000);
+  mode = (mode + 1) % 5;
+}
