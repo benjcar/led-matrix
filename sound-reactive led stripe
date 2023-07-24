@@ -1,0 +1,46 @@
+// Include libraries
+#include <FastLED.h>
+
+// Define LED strip parameters
+#define LED_PIN     6
+#define NUM_LEDS    60
+#define LED_TYPE    WS2812B
+#define COLOR_ORDER GRB
+
+// Audio setup
+#define MIC_PIN     A0  // Microphone input pin
+#define MIN_MIC     0   // Minimum value of audio signal (adjust for your microphone)
+#define MAX_MIC     1023// Maximum value of audio signal (adjust for your microphone)
+#define MIC_THRESHOLD 500 // Audio signal threshold to trigger the sound-reactive effect (adjust for your microphone)
+
+// Create LED object
+CRGB leds[NUM_LEDS];
+
+void setup() {
+  // Setup LED strip
+  FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS);
+  FastLED.setBrightness(50); // Set LED strip brightness (0 to 255)
+
+  // Initial settings
+  pinMode(MIC_PIN, INPUT);
+  Serial.begin(9600); // Used to monitor audio signal via Serial Monitor
+}
+
+void loop() {
+  int micValue = analogRead(MIC_PIN);
+  int brightness = map(micValue, MIN_MIC, MAX_MIC, 0, 255);
+  
+  if (micValue > MIC_THRESHOLD) {
+    // Enable sound-reactive effect
+    for (int i = 0; i < NUM_LEDS; i++) {
+      leds[i] = CRGB::White; // Set color to white or any other color you prefer
+    }
+  } else {
+    // Disable sound-reactive effect
+    for (int i = 0; i < NUM_LEDS; i++) {
+      leds[i] = CRGB::Black; // Turn off the LEDs
+    }
+  }
+  
+  FastLED.show();
+}
