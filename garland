@@ -1,41 +1,52 @@
 #include <FastLED.h>
 
-#define LED_PIN 6      // Пин, к которому подключена лента
-#define NUM_LEDS 30    // Количество светодиодов в ленте
-#define LED_TYPE WS2812 // Тип вашей светодиодной ленты (WS2812, WS2811, NEOPIXEL и т. д.)
-#define BRIGHTNESS 128 // Яркость светодиодов (от 0 до 255)
+#define LED_PIN 6      // Pin to which the LED strip is connected
+#define NUM_LEDS 30    // Number of LEDs in the strip
+#define LED_TYPE WS2812 // Type of LED strip (WS2812, WS2811, NEOPIXEL, etc.)
+#define BRIGHTNESS 128 // Brightness of the LEDs (0-255)
 
 CRGB leds[NUM_LEDS];
 
+// Define the different modes of the LED strip
+enum LedMode {
+  RED,
+  GREEN,
+  BLUE,
+  RAINBOW,
+  STROBE
+};
+
+// Initialize the LED strip and serial communication
 void setup() {
   FastLED.addLeds<LED_TYPE, LED_PIN, GRB>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
   FastLED.setBrightness(BRIGHTNESS);
   Serial.begin(9600);
 }
 
+// Loop through the different modes of the LED strip
 void loop() {
-  static uint8_t mode = 0;
+  static LedMode mode = RED;
   switch (mode) {
-    case 0:
-      // Режим 1: Все светодиоды красного цвета
+    case RED:
+      // Mode 1: All LEDs are red
       fill_solid(leds, NUM_LEDS, CRGB::Red);
       FastLED.show();
       break;
       
-    case 1:
-      // Режим 2: Все светодиоды зеленого цвета
+    case GREEN:
+      // Mode 2: All LEDs are green
       fill_solid(leds, NUM_LEDS, CRGB::Green);
       FastLED.show();
       break;
 
-    case 2:
-      // Режим 3: Все светодиоды синего цвета
+    case BLUE:
+      // Mode 3: All LEDs are blue
       fill_solid(leds, NUM_LEDS, CRGB::Blue);
       FastLED.show();
       break;
 
-    case 3:
-      // Режим 4: Плавное переключение между цветами
+    case RAINBOW:
+      // Mode 4: LEDs cycle through the colors of the rainbow
       for (int i = 0; i < 256; i++) {
         fill_solid(leds, NUM_LEDS, CHSV(i, 255, 255));
         FastLED.show();
@@ -43,16 +54,22 @@ void loop() {
       }
       break;
 
-    case 4:
-      // Режим 5: Случайные цвета на каждом светодиоде
+    case STROBE:
+      // Mode 5: LEDs strobe on and off
       for (int i = 0; i < NUM_LEDS; i++) {
-        leds[i] = CRGB(random(256), random(256), random(256));
+        leds[i] = CRGB::White;
       }
       FastLED.show();
+      delay(100);
+      for (int i = 0; i < NUM_LEDS; i++) {
+        leds[i] = CRGB::Black;
+      }
+      FastLED.show();
+      delay(100);
       break;
   }
 
-  // Переключение на следующий режим каждые 5 секунд
+  // Switch to the next mode every 5 seconds
   delay(5000);
-  mode = (mode + 1) % 5;
+  mode = static_cast<LedMode>((mode + 1) % 5);
 }
