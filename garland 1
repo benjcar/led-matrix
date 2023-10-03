@@ -1,0 +1,78 @@
+#include <FastLED.h>
+
+#define LED_PIN 6      // Pin to which the LED strip is connected
+#define NUM_LEDS 30    // Number of LEDs in the strip
+#define LED_TYPE WS2812 // Type of LED strip (WS2812, WS2811, NEOPIXEL, etc.)
+#define BRIGHTNESS 128 // Brightness of the LEDs (0-255)
+
+CRGB leds[NUM_LEDS];
+
+// Define the different modes of the LED strip
+enum LedMode {
+  RED,
+  GREEN,
+  BLUE,
+  RAINBOW,
+  STROBE
+};
+
+// Initialize the LED strip and serial communication
+void setup() {
+  FastLED.addLeds<LED_TYPE, LED_PIN, GRB>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
+  FastLED.setBrightness(BRIGHTNESS);
+  Serial.begin(9600);
+}
+
+// Loop through the different modes of the LED strip
+void loop() {
+  static LedMode mode = RED;
+  switch (mode) {
+    case RED:
+      // Mode 1: All LEDs are red
+      fill_solid(leds, NUM_LEDS, CRGB::Red);
+      FastLED.show();
+      break;
+      
+    case GREEN:
+      // Mode 2: All LEDs are green
+      fill_solid(leds, NUM_LEDS, CRGB::Green);
+      FastLED.show();
+      break;
+
+    case BLUE:
+      // Mode 3: All LEDs are blue
+      fill_solid(leds, NUM_LEDS, CRGB::Blue);
+      FastLED.show();
+      break;
+
+    case RAINBOW:
+      // Mode 4: LEDs cycle through the colors of the rainbow
+      for (int i = 0; i < 256; i += 2) {
+        fill_solid(leds, NUM_LEDS, CHSV(i, 255, 255));
+        FastLED.show();
+        delay(20);
+      }
+      break;
+
+    case STROBE:
+      // Mode 5: LEDs strobe on and off with a fade effect
+      for (int i = 0; i < NUM_LEDS; i++) {
+        for (int j = 0; j < 255; j++) {
+          leds[i] = CRGB(j, j, j);
+          FastLED.show();
+          delay(5);
+        }
+        if (random(10) == 0) {
+          leds[i] = CRGB::White;
+        } else {
+          leds[i] = CRGB::Black;
+        }
+      }
+      FastLED.show();
+      break;
+  }
+
+  // Switch to the next mode every 5 seconds
+  delay(5000);
+  mode = static_cast<LedMode>((mode + 1) % 5);
+}
