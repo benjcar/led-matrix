@@ -1,0 +1,26 @@
+const int numLamps = 6;   // Number of LED lamps
+const int potPin = A0;    // Analog pin for potentiometer input
+int brightness[numLamps]; // Array to store brightness values for each lamp
+
+void setup() {
+  // Initialize each LED pin as an output
+  for (int i = 0; i < numLamps; i++) {
+    pinMode(i, OUTPUT);
+    brightness[i] = 0; // Initialize brightness of each LED to 0
+  }
+}
+
+void loop() {
+  // Read the value of the potentiometer
+  int potValue = analogRead(potPin);
+  
+  // Map the potentiometer value to brightness range (0-255)
+  int brightnessValue = map(potValue, 0, 1023, 0, 255);
+  
+  // Update the brightness of each LED
+  for (int i = 0; i < numLamps; i++) {
+    analogWrite(i, brightnessValue);
+  }
+  
+  delay(50); // Add a small delay for stability
+}
