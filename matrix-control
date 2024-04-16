@@ -1,24 +1,24 @@
 #include <LedControl.h>
 
-const int dataPin = 12;  // Пин для передачи данных на светодиодную матрицу
-const int clkPin = 11;   // Пин для передачи сигнала тактирования на светодиодную матрицу
-const int csPin = 10;    // Пин для выбора активного устройства (Chip Select) на светодиодной матрице
-const int numRows = 9;   // Количество строк в матрице
-const int numCols = 9;   // Количество столбцов в матрице
+const int dataPin = 12;  // Pin for data transfer to the LED matrix
+const int clkPin = 11;   // Pin for clock signal transfer to the LED matrix
+const int csPin = 10;    // Pin for selecting the active device (Chip Select) on the LED matrix
+const int numRows = 9;   // Number of rows in the matrix
+const int numCols = 9;   // Number of columns in the matrix
 
-LedControl lc = LedControl(dataPin, clkPin, csPin, 1); // Создаем объект для управления матрицей
+LedControl lc = LedControl(dataPin, clkPin, csPin, 1); // Create an object to control the matrix
 
 void setup() {
-  // Инициализация матрицы
-  lc.shutdown(0, false);       // Включаем матрицу (false - отключить тестовый режим, true - включить)
-  lc.setIntensity(0, 8);       // Устанавливаем интенсивность свечения светодиодов (от 0 до 15)
-  lc.clearDisplay(0);          // Очищаем матрицу
+  // Matrix initialization
+  lc.shutdown(0, false);       // Turn on the matrix (false - disable test mode, true - enable)
+  lc.setIntensity(0, 8);       // Set LED brightness intensity (from 0 to 15)
+  lc.clearDisplay(0);          // Clear the matrix
 }
 
 void loop() {
-  // Пример: отображение шахматной доски на матрице
+  // Example: display a chessboard on the matrix
   
-  // Массив для шахматной доски (1 - светодиод включен, 0 - светодиод выключен)
+  // Array for the chessboard (1 - LED on, 0 - LED off)
   int chessboard[numRows][numCols] = {
     {1, 0, 1, 0, 1, 0, 1, 0, 1},
     {0, 1, 0, 1, 0, 1, 0, 1, 0},
@@ -31,17 +31,17 @@ void loop() {
     {1, 0, 1, 0, 1, 0, 1, 0, 1},
   };
 
-  // Отображение доски на матрице
+  // Display the board on the matrix
   for (int row = 0; row < numRows; row++) {
     for (int col = 0; col < numCols; col++) {
       lc.setLed(0, row, col, chessboard[row][col]);
-      delay(50);  // Небольшая задержка для визуализации
+      delay(50);  // Small delay for visualization
     }
   }
 
-  // Задержка перед очисткой матрицы
+  // Delay before clearing the matrix
   delay(2000);
 
-  // Очистка матрицы
+  // Clear the matrix
   lc.clearDisplay(0);
 }
